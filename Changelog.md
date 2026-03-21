@@ -1,3 +1,8 @@
+# 3.1.4
+- @Otari98 Remove aspect + trueshot alerts while flying/taxiing #54
+- (TWoW) Aspect Tracker - Added Fox and Viper aspects
+- (TWoW) Cast Bar - Added variable Aimed Shot cast time
+
 # 3.1.3
 - Added support for Baited Shot.
 - Fixed a regression bug related to instant shots.
