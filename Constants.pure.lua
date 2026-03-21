@@ -38,11 +38,13 @@ return {
 		-- Client
 		Aspect_Beast = "Interface\\Icons\\Ability_Mount_PinkTiger",
 		Aspect_Cheetah = "Interface\\Icons\\Ability_Mount_JungleTiger",
+		Aspect_Fox = "Interface\\Icons\\ability_hunter_aspectofthefox",-- TWoW ability
 		Aspect_Hawk = "Interface\\Icons\\Spell_Nature_RavenForm",
 		Aspect_Monkey = "Interface\\Icons\\Ability_Hunter_AspectOfTheMonkey",
 		Aspect_Pack = "Interface\\Icons\\Ability_Mount_WhiteTiger",
 		Aspect_Wild = "Interface\\Icons\\Spell_Nature_ProtectionformNature",-- 'form' is not a typo.
 		Aspect_Wolf = "Interface\\Icons\\Ability_Mount_WhiteDireWolf",
+		Aspect_Viper = "Interface\\Icons\\ability_hunter_aspectoftheviper",-- TWoW ability
 		LockAndLoad = "Interface\\Icons\\ability_hunter_lockandload",-- TWoW ability
 		Quickshots = "Interface\\Icons\\Ability_Warrior_InnerRage",
 		RapidFire = "Interface\\Icons\\Ability_Hunter_RunningShot",

@@ -15,8 +15,12 @@ local chooseIconTexture = function()
 		return Const.Icon.Aspect_Beast
 	elseif Api.Aura.PredBuffActive(Quiver.L.Spell["Aspect of the Cheetah"]) then
 		return Const.Icon.Aspect_Cheetah
+	elseif Api.Aura.PredBuffActive(Quiver.L.Spell["Aspect of the Fox"]) then
+		return Const.Icon.Aspect_Fox
 	elseif Api.Aura.PredBuffActive(Quiver.L.Spell["Aspect of the Monkey"]) then
 		return Const.Icon.Aspect_Monkey
+	elseif Api.Aura.PredBuffActive(Quiver.L.Spell["Aspect of the Viper"]) then
+		return Const.Icon.Aspect_Viper
 	elseif Api.Aura.PredBuffActive(Quiver.L.Spell["Aspect of the Wild"]) then
 		return Const.Icon.Aspect_Wild
 	elseif Api.Aura.PredBuffActive(Quiver.L.Spell["Aspect of the Wolf"]) then
