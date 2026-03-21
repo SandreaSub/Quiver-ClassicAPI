@@ -43,6 +43,7 @@ return {
 		Aspect_Pack = "Interface\\Icons\\Ability_Mount_WhiteTiger",
 		Aspect_Wild = "Interface\\Icons\\Spell_Nature_ProtectionformNature",-- 'form' is not a typo.
 		Aspect_Wolf = "Interface\\Icons\\Ability_Mount_WhiteDireWolf",
+		LockAndLoad = "Interface\\Icons\\ability_hunter_lockandload",-- TWoW ability
 		Quickshots = "Interface\\Icons\\Ability_Warrior_InnerRage",
 		RapidFire = "Interface\\Icons\\Ability_Hunter_RunningShot",
 		TrollBerserk = "Interface\\Icons\\Racial_Troll_Berserk",

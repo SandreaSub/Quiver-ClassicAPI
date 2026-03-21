@@ -1,6 +1,7 @@
 -- This file would be API extension code, except that it only supports
 -- hunter casts. I have no idea how to compute haste for non-hunter spells.
 local Api = require "Api/Index.wow.lua"
+local Const = require "Constants.pure.lua"
 local L = require "Lib/Index.pure.lua"
 
 -- GetInventoryItemLink("Player", slot#) returns a link, ex. [name]
@@ -27,6 +28,23 @@ local scanRangedWeaponSpeed = function()
 end
 
 ---@param nameEnglish string
+---@param meta SpellMetaCastedShot
+---@return number
+---@nodiscard
+local getCastTimeRaw = function(meta)
+	-- Kludge - The invariant is nil = "Aimed Shot"
+	if (meta.Time ~= nil) then
+		return meta.Time
+	elseif not TURTLE_WOW_VERSION then
+		return 3000
+	elseif (Api.Aura.GetIsActiveAndTimeLeftByTexture(Const.Icon.LockAndLoad)) then
+		return 1000
+	else
+		return 2000
+	end
+end
+
+---@param nameEnglish string
 ---@return number casttime
 ---@return number startLatAdjusted
 ---@return number startLocal
@@ -44,8 +62,9 @@ local CalcCastTime = function(nameEnglish)
 		local speedCurrent, _, _ , _, _, _ = UnitRangedDamage("player")
 		local speedWeapon = L.Nil.GetOr(scanRangedWeaponSpeed(), speedCurrent)
 		local speedMultiplier = speedCurrent / speedWeapon
+
 		-- https://www.mmo-champion.com/content/2188-Patch-4-0-6-Feb-22-Hotfixes-Blue-Posts-Artworks-Comic
-		local casttime = (meta.Offset + meta.Time * speedMultiplier) / 1000
+		local casttime = (meta.Offset + getCastTimeRaw(meta) * speedMultiplier) / 1000
 		return casttime, startLatAdjusted, startLocal
 	elseif meta.Haste == "none" then
 		return 0, startLatAdjusted, startLocal

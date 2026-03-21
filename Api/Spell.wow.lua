@@ -5,7 +5,7 @@
 ---@class SpellMetaCastedShot: SpellMetaAll
 ---@field Haste "range"
 ---@field IsAmmo true
----@field Time integer
+---@field Time nil|integer -- Nil because TWoW uses variable cast time for aimed shot
 ---@field Offset integer
 
 ---@class SpellMetaInstantShot: SpellMetaAll
@@ -16,7 +16,7 @@
 -- This will probably cause maintenance problems.
 local DB_SPELL = {
 	-- Casted Shots
-	["Aimed Shot"]={ Class="HUNTER", Time=3000, Offset=500, Haste="range", Icon="INV_Spear_07", IsAmmo=true },---@type SpellMetaCastedShot
+	["Aimed Shot"]={ Class="HUNTER", Time=nil, Offset=500, Haste="range", Icon="INV_Spear_07", IsAmmo=true },---@type SpellMetaCastedShot
 	["Multi-Shot"]={ Class="HUNTER", Time=0, Offset=500, Haste="range", Icon="Ability_UpgradeMoonGlaive", IsAmmo=true },---@type SpellMetaCastedShot
 	["Steady Shot"]={ Class="HUNTER", Time=1000, Offset=500, Haste="range", Icon="Ability_Hunter_SteadyShot", IsAmmo=true },---@type SpellMetaCastedShot
 
