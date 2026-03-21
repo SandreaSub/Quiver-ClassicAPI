@@ -1,5 +1,6 @@
 return {
 	["Aspect of the Wolf"] = "孤狼守护",
+	["Aspect of the Fox"] = "灵狐守护",
 
 	-- Vanilla 1.12
 	["Abolish Disease"] = "驱除疾病",
@@ -61,7 +62,7 @@ return {
 	["Aspect of the Hawk"] = "雄鹰守护",
 	["Aspect of the Monkey"] = "灵猴守护",
 	["Aspect of the Pack"] = "豹群守护",
-	["Aspect of the Viper"] = "Aspect of the Viper",-- TODO translate
+	["Aspect of the Viper"] = "蝰蛇守护",
 	["Aspect of the Wild"] = "野性守护",
 	["Aspect of Venoxis"] = "Aspect of Venoxis",-- TODO translate
 	["Astral Recall"] = "星界传送",
