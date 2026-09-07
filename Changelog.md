@@ -1,3 +1,39 @@
+# 3.1.5-Octo5-Diag1
+
+Corrected stabilization build with automatic diagnostics retained for player testing.
+
+- Requires and version-gates ClassicAPI 1.14.0+ (`CLASSIC_API_VERSION >= 11400`).
+- Defers Quiver feature custom-event registration until the ClassicAPI contract passes.
+- Removed dead/unnecessary startup API requirements.
+- Uses stable spell IDs plus ClassicAPI-localized names for hunter combat logic.
+- Range Indicator uses numeric spell IDs directly; no dedicated action-bar spell is required and Wing Clip can probe melee range even when unlearned.
+- Fixed Aspect Tracker being re-shown while already on a taxi.
+- Fixed Tranq miss/failure announcements bypassing the configured None/Say/Raid channel.
+- Improved Tranq failure correlation with localized Vanilla combat GlobalStrings and a post-Tranq time window.
+- Fixed visually disabled buttons still running click callbacks.
+- Trinket swap now prefers exact item IDs/item links, refuses ambiguous shared-icon texture requests, preserves the real bag slot, and returns the replaced trinket to that source slot instead of leaving it on the cursor.
+- Preserves previous ClassicAPI Auto Shot, castbar, movement, border-style, UI-scale, migration, bag-ID and updater fixes.
+- Rewrote OctoWoW documentation to match the current DLL-only ClassicAPI architecture.
+- Keeps `Quiver_Diagnostics` active by default so intermittent player bugs can be reconstructed from SavedVariables; its 20,000-record cap is rolling so late-session evidence replaces the oldest block instead of being discarded.
+
+# 3.1.5-Octo4-Diag1
+
+Diagnostic-only build based on the working Octo4 runtime. Adds SavedVariables tracing of ClassicAPI spellcast events/API snapshots and Quiver module state transitions. No stabilization fixes from the post-Octo4 audit are applied in this build; it exists to collect dynamic evidence before Octo5.
+
+# 3.1.5-Octo4
+
+- Fixed ClassicAPI cast API namespace: Quiver now uses `C_Spell.UnitCastingInfo` instead of the intentionally-unregistered global `UnitCastingInfo`.
+- Fixed the ClassicAPI readiness gate to test `C_Spell.UnitCastingInfo`.
+- Startup diagnostics now name the exact missing ClassicAPI function instead of reporting a generic failure.
+- Verified the supplied ClassicAPI 1.14.0 DLL contains every API required by this build.
+
+# 3.1.5-Octo3
+
+- Fixed addon startup on DLL-only ClassicAPI installations. Removed the incorrect hard TOC dependency on a separate `!!!ClassicAPI` addon folder.
+- Quiver remains ClassicAPI-only through runtime API validation.
+- Initialization now retries at `PLAYER_LOGIN` if ClassicAPI APIs were not ready at `VARIABLES_LOADED`.
+- `/quiver` and `/qq` are registered immediately and report a clear ClassicAPI initialization error instead of silently doing nothing.
+
 # 3.1.5
 - Fix a [bug](https://github.com/SabineWren/Quiver/pull/59) where unlocked frames overwrote shot timer state.
 

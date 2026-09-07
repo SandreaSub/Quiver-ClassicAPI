@@ -1,0 +1,85 @@
+Quiver 3.1.5-Octo5-Diag1 - validation record
+Generated: 2026-09-07
+
+Target
+------
+Client: World of Warcraft 1.12.1 / OctoWoW (Turtle WoW 1.18.1 base)
+Required compatibility DLL: ClassicAPI 1.14.0 or newer
+Reference ClassicAPI v1.14.0 SHA-256:
+367088ccbd6486417b96b67a5384f0bc921c3174b61b5364003d8a365689f43d
+The user's ClassicAPI(4).dll matched that official v1.14.0 release hash exactly.
+
+Static validation
+-----------------
+- 61 project Lua files parsed successfully with texlua.
+- Final Quiver.bundle.lua parsed successfully.
+- Runtime bundle contains 57 registered modules (56 original Quiver modules + Diagnostics).
+- Original Quiver 3.1.5 module set was preserved; Diagnostics is the only added module.
+- No active ITEM_LOCK_CHANGED Auto Shot heuristic.
+- No GetPlayerMapPosition movement heuristic.
+- No CastSpell/CastSpellByName/UseAction monkey-patching.
+- No active GetActionTexture spell identification.
+- ClassicAPI custom UNIT_SPELLCAST_* events are registered only after the ClassicAPI contract passes.
+
+ClassicAPI contract
+-------------------
+- Requires CLASSIC_API_VERSION >= 11400.
+- Active runtime contract checks only APIs/events the build actually consumes.
+- C_Spell.UnitCastingInfo is used under the correct namespace.
+- C_Spell.IsSpellInRange is called with numeric spell IDs where operationally useful.
+- C_Spell.IsRangedAutoAttackSpell identifies confirmed ranged auto-repeat successes.
+- GetUnitSpeed supplies player movement state.
+
+Mock runtime validation
+-----------------------
+Normal ClassicAPI-ready startup:
+  MOCK_RUNTIME_OK mode=normal
+  frames=144 diagRecords=273 chatMessages=3 sentChat=5
+
+Deferred ClassicAPI-ready startup:
+  MOCK_RUNTIME_OK mode=late
+  frames=144 diagRecords=275 chatMessages=3 sentChat=5
+
+The deferred test deliberately makes UNIT_SPELLCAST_* registration fail if attempted
+before ClassicAPI becomes ready. Quiver imports without registering those events,
+waits through VARIABLES_LOADED, and initializes successfully at PLAYER_LOGIN after
+CLASSIC_API_VERSION becomes 11400.
+
+Mock coverage includes:
+- /quiver and /qdiag registration
+- SavedVariables creation
+- Auto Shot start/success/movement/stop
+- Aimed Shot START/DELAYED/SUCCEEDED/STOP and cast GUID
+- range transitions and target death
+- Aspect tracker locked/taxi visibility
+- Trueshot aura/cast refresh
+- Tranq None/Say/Raid behavior, unrelated miss filtering, raid gating
+- Trinket swap from non-zero bags, old-item cursor return, combat Feign Death path,
+  retry after combat, and duplicate-icon ambiguity refusal
+
+Focused regression tests
+------------------------
+UNIT_FIXES_OK
+Covers disabled-button callback gating, BorderStyle associative callback dispatch,
+string-valued UI scale CVar handling, and M002 ColourShoot/ColourReload migration.
+
+DIAGNOSTICS_ROLLING_OK records=16093 trimmed=5000
+Covers automatic recorder activation/re-arm and rolling retention. At the 20,000
+record ceiling, the oldest 5,000 records are trimmed so later-session bugs remain
+capturable instead of silently dropping new data.
+
+Diagnostic behavior
+-------------------
+- Automatic on every login/reload for this diagnostic build.
+- /qdiag stop pauses only the current session; it re-arms after reload/restart.
+- Stored in Quiver_Diagnostics inside the ordinary Quiver.lua SavedVariables file.
+- Trace is bounded and rolling; it does not upload anything.
+- Players can add /qdiag mark <description> around visible bugs.
+
+Important limitation
+--------------------
+These tests are static, unit, and simulated runtime validation. They do not replace
+real OctoWoW gameplay across every hunter build, weapon, macro, latency/FPS condition,
+locale, raid state, and server edge case. The retained diagnostic recorder is intended
+to capture those remaining real-client cases from players before declaring a final
+non-diagnostic baseline.

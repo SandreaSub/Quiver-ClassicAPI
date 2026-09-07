@@ -1,8 +1,8 @@
 ## Interface: 11200
-## Title: Quiver - |cff00ff00Hunter
-## Notes: A collection of hunter utilities.
-## Author: SabineWren, 2022-2026
-## Version: 3.1.5
-## SavedVariables: Quiver_Store
+## Title: Quiver - |cff00ff00Hunter|r |cff88ccffOctoWoW|r
+## Notes: ClassicAPI 1.14.0+ stabilization and automatic diagnostic build for OctoWoW.
+## Author: SabineWren, OctoWoW compatibility pass
+## Version: 3.1.5-Octo5-Diag1
+## SavedVariables: Quiver_Store, Quiver_Diagnostics
 
 Quiver.bundle.lua
