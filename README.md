@@ -1,21 +1,32 @@
-> [!IMPORTANT]
-> $${\color{red}\* \color{orange}\* \color{yellow}\*}$$ **[Installation Instructions](#installation)** $${\color{yellow}\* \color{orange}\* \color{red}\*}$$
+# Quiver - ClassicAPI
 
-<img src="/Media/Config_UI_0f9e20.jpg" height="400px">
+ClassicAPI adaptation of [SabineWren's Quiver](https://github.com/SabineWren/Quiver) for the Vanilla 1.12.1 client, with a focus on OctoWoW/Turtle WoW reliability.
 
-Use `/Quiver` or `/qq` to open the configuration menu.
+**Current build:** `3.1.5-Octo5-Diag1`  
+**Requires:** [ClassicAPI](https://github.com/brues-code/ClassicAPI) **1.14.0 or newer**
+
+Use `/quiver` or `/qq` to open the configuration menu.
+
+> [!NOTE]
+> This fork replaces several Vanilla-era inference methods with ClassicAPI's spellcast, movement, aura, and range APIs. It is currently distributed with automatic diagnostics enabled so intermittent player reports can be investigated from SavedVariables.
+
+<img src="https://raw.githubusercontent.com/SabineWren/Quiver/main/Media/Config_UI_0f9e20.jpg" height="400px">
 
 ## Features
+
 - [Aspect Tracker](#aspect-tracker)
 - [Auto Shot Timer](#auto-shot-timer)
 - [Castbar](#castbar)
-- [Lua Functions](#lua-functions)
 - [Range Indicator](#range-indicator)
 - [Tranq Shot Announcer](#tranq-shot-announcer)
 - [Trueshot Aura Alarm](#trueshot-aura-alarm)
+- [Macro API](#macro-api)
+- [Automatic Diagnostics](#automatic-diagnostics)
 
 ### Aspect Tracker
-Never lose track of your current aspect
+
+Never lose track of your current aspect.
+
 <table>
    <tr>
       <td>None</td>
@@ -23,153 +34,182 @@ Never lose track of your current aspect
       <td>Cheetah</td>
    </tr>
    <tr>
-      <td><img src="/Media/Aspect_None.png" height="64px"></td>
-      <td><img src="/Media/Aspect_Pack.png" height="64px"></td>
-      <td><img src="/Media/Aspect_Cheetah.jpg" height="64px"></td>
+      <td><img src="https://raw.githubusercontent.com/SabineWren/Quiver/main/Media/Aspect_None.png" height="64px"></td>
+      <td><img src="https://raw.githubusercontent.com/SabineWren/Quiver/main/Media/Aspect_Pack.png" height="64px"></td>
+      <td><img src="https://raw.githubusercontent.com/SabineWren/Quiver/main/Media/Aspect_Cheetah.jpg" height="64px"></td>
    </tr>
 </table>
 
-- No UI while in Aspect of the Hawk
-- Displays Hawk texture when no aspect enabled
-- Shows border while Pack active (potentially other hunters)
+- No warning UI while the normal Hawk state is active.
+- Displays the Hawk texture when no aspect is enabled.
+- Highlights Aspect of the Pack.
+- Hides appropriately while travelling by taxi when frames are locked.
+- Aura state is read through ClassicAPI rather than tooltip/texture guessing.
 
 ### Auto Shot Timer
+
 <figure>
    <figcaption>Shooting</figcaption>
-   <img src="/Media/Bar_1_Shooting.jpg" height="180px">
+   <img src="https://raw.githubusercontent.com/SabineWren/Quiver/main/Media/Bar_1_Shooting.jpg" height="180px">
 </figure>
 <figure>
    <figcaption>Reloading</figcaption>
-   <img src="/Media/Bar_2_Reloading.jpg" height="180px">
+   <img src="https://raw.githubusercontent.com/SabineWren/Quiver/main/Media/Bar_2_Reloading.jpg" height="180px">
 </figure>
 
-Inspired by:
-- [HSK](https://github.com/anstellaire/HunterSwissKnife) -- Ignores instant spells such as Arcane Shot
-- [YaHT](https://github.com/Aviana/YaHT/tree/1.12.1) -- Resets swing timer while casting a shot
+Tracks the Auto Shot aim and reload phases from confirmed ClassicAPI spellcast events and real player movement speed.
 
-Quiver exposes timer state (`GlobalFunctions.lua`). I recommend a no-clip macro:
-```lua
--- This macro fires Steady Shot unless doing so will interrupt an auto shot.
--- Steady Shot can hang a while before firing, so tune the cutoff (default -0.25).
--- Negative values prevent interrupting, while positive account for latency.
-/run local a, b = Quiver.GetSecondsRemainingShoot(); local c = a and b < -0.25; local f = c and CastSpellByName or Quiver.CastNoClip; f("Steady Shot")
-```
+This fork no longer relies on `ITEM_LOCK_CHANGED`, map-coordinate movement checks, action-icon matching, or instant-shot guessing to determine when an Auto Shot fired.
+
+Inspired by:
+- [HunterSwissKnife](https://github.com/anstellaire/HunterSwissKnife)
+- [YaHT](https://github.com/Aviana/YaHT/tree/1.12.1)
 
 ### Castbar
-<img src="/Media/Bar_3_Casting.jpg" height="180px">
 
-- Shows Aimed Shot, Multi-Shot, and Steady Shot
+<img src="https://raw.githubusercontent.com/SabineWren/Quiver/main/Media/Bar_3_Casting.jpg" height="180px">
 
-### Lua Functions
-#### CastPetAction
-Find and cast pet action if possible.
-```lua
-/run Quiver.CastPetAction("Furious Howl"); CastSpellByName("Multi-Shot")
-```
+Shows:
+- Aimed Shot
+- Multi-Shot
+- Steady Shot
 
-#### FdPrepareTrap
-- Spammable FD-Trap macro
-- Checks: FD CD, Trap CD, is-player-in-combat, is-pet-in-combat
-- Casts: FD, petPassive, petFollow
-
-```lua
--- Standard trap macro for most servers
-/run CastSpellByName("Frost Trap"); Quiver.FdPrepareTrap()
-
--- Workaround for Turtle WoW CC2
-/run --CastSpellByName("Freezing Trap")
-/run Quiver.FdPrepareTrap(); CastSpellByName("Freezing Trap")
-```
-> [!WARNING]
-> This will pull your pet even if you're stunned etc.
+Cast timing comes from `C_Spell.UnitCastingInfo("player")` and ClassicAPI cast GUIDs, so macros, corrected server cast durations, failed casts, and interruptions do not depend on Quiver replacing `CastSpell`, `CastSpellByName`, or `UseAction`.
 
 ### Range Indicator
-[<img src="/Media/Range_Indicator_Thumbnail.jpg" height="180px">](https://youtu.be/UxLJJ1ne52E)
 
-- Based on [Egnar](https://github.com/Medeah/Egnar)
-- Automatically locates action bar slots
-- Warns you when abilities missing from action bar
+[<img src="https://raw.githubusercontent.com/SabineWren/Quiver/main/Media/Range_Indicator_Thumbnail.jpg" height="180px">](https://youtu.be/UxLJJ1ne52E)
 
-Requires corresponding spellbook abilities on your action bars. Hidden action bars work fine, but macros are [ignored](https://github.com/SabineWren/Quiver/issues/21).
+Based on [Egnar](https://github.com/Medeah/Egnar).
+
+The ClassicAPI build checks range directly by numeric spell ID with `C_Spell.IsSpellInRange`.
+
+- No dedicated copy of Wing Clip, Hunter's Mark, Auto Shot, Scare Beast, or Scatter Shot is required on an action bar.
+- Abilities can be used through macros without breaking the range display.
+- Wing Clip can be used as the melee-distance probe even before it has been learned.
 
 ### Tranq Shot Announcer
-<img src="/Media/Tranq_UI.png">
 
-Shows the Tranquilizing Shot cooldown of every hunter. Announces when casting Tranq, and again if the shot misses.
+<img src="https://raw.githubusercontent.com/SabineWren/Quiver/main/Media/Tranq_UI.png">
+
+Shows the Tranquilizing Shot cooldown of hunters and can announce Tranq casts and failures.
+
+Announcements obey the configured **None / Say / Raid** channel. The ClassicAPI build correlates failures with a recent confirmed Tranq instead of treating unrelated combat failures as a Tranq miss.
 
 ### Trueshot Aura Alarm
+
 <table>
    <tr>
       <td>None</td>
       <td>Expiring</td>
    </tr>
    <tr>
-      <td><img src="/Media/Trueshot_None.png" height="64px"></td>
-      <td><img src="/Media/Trueshot_Low.png" height="64px"></td>
+      <td><img src="https://raw.githubusercontent.com/SabineWren/Quiver/main/Media/Trueshot_None.png" height="64px"></td>
+      <td><img src="https://raw.githubusercontent.com/SabineWren/Quiver/main/Media/Trueshot_Low.png" height="64px"></td>
    </tr>
 </table>
 
-This checks if you have Trueshot Aura talented. If so, Quiver tracks the buff and duration, and warns you to recast it.
+If Trueshot Aura is talented, Quiver tracks the real aura and remaining duration and warns when it needs to be recast.
 
-## Installation
-### Option 1 - Pre-bundled release zip
-This installation option is a manual install (i.e. no automated updates)
-1. [Download](https://github.com/SabineWren/Quiver/releases) latest version
-2. Extract folder from the Zip
-3. Rename folder from `Quiver-x.x.x` to `Quiver`
-4. Move folder into `<WoW install>/Interface/AddOns/`
-5. Restart WoW
-> [!Tip]
-> Release zip filenames ends with a numeric version `-x.x.x` and contain the file `Quiver.bundle.lua`.
-> If the name isn't versioned, then you downloaded a source code branch.
+### Macro API
 
-### Option 2 - Clone latest release
-For use with Git updates `git pull --rebase` or addon managers.
-1. Open a terminal in your addons directory
-2. `git clone https://github.com/SabineWren/Quiver --branch latest-release`
-3. Restart WoW
-> [!Tip]
-> If you download Quiver through an addon manager, it may default to source code. Change the branch to `latest-release`.
->
-> Addon managers do not warn you about breaking changes. See the [changelog](https://github.com/SabineWren/Quiver/blob/main/Changelog.md) or [release notes](https://github.com/SabineWren/Quiver/releases) after updating.
+Quiver exposes several helpers for hunter macros.
 
-### Option 3 - Build from source
-Do you live on the bleeding edge?
-1. Open a terminal in your addons directory
-2. `git clone https://github.com/SabineWren/Quiver`
-3. `cd Quiver`
-4. `npm install`
-5. `npm run bundle-once`
-6. Restart WoW
+#### Auto Shot timing
 
-## Contributing
-### Localization
-Quiver is fully localized. If you want to contribute a new locale, see zhCN for reference in `/Locale/`:
-1. `<locale>.client.lua` for values that exactly correspond to the client, ex. "Multi-Shot". Should be identical values to what other addons use.
-2. `<locale>.translations.lua` for Quiver-specific text that requires translation.
+- `Quiver.GetSecondsRemainingReload()`
+- `Quiver.GetSecondsRemainingShoot()`
+- `Quiver.PredMidShot()`
+- `Quiver.CastNoClip(spellName)`
 
-### Dependencies
-Type definitions are gitignored, so [clone](https://github.com/SabineWren/wow-api-type-definitions) them separately.
+Example:
 
-See `package.json` for everything else.
+```lua
+/run local a,b=Quiver.GetSecondsRemainingShoot(); local c=a and b < -0.25; local f=c and CastSpellByName or Quiver.CastNoClip; f("Steady Shot")
+```
 
-### Custom Events
-Files in `/Events` hook into game functions. Use these events if possible instead of declaring your own hooks.
-- Spellcast: CastSpell, CastSpellByName, UseAction
+#### CastPetAction
 
-### Module Lifecycle
-Features are packaged and enabled as 'modules' that implement lifecycle hooks. See the type definitions for details.
+Find and cast a pet action if possible.
 
-### Possible Codebase Improvements
-- Layout engine [1](https://github.com/wolf81/composer) [2](https://www.youtube.com/watch?v=DYWTw19_8r4)
-- Full type safety
-- FD macro LoseControl integration (state not exposed, and no license provided)
+```lua
+/run Quiver.CastPetAction("Furious Howl"); CastSpellByName("Multi-Shot")
+```
 
-### Possible Extra Features
-- Better pet training UI (ex. see Wowhead pet talent calculator)
-- Optional sound alerts (pet happiness, ammo low, pet dismiss)
-- UI to select favourite food per pet. One-button command to feed any pet.
-- Aspect change API with cancellation and debouncing for Cheetah/Pack
-- Quickshots proc watch
-- Warn when pet attacking a different target
-- Stateful action API with current state indicator. ex. cycle between: Tranq Shot and Distracting Shot, pet-passive-follow and pet-passive-stay, mouseover-petattack and target-petattack, etc.
+#### FdPrepareTrap
+
+Spammable Feign Death / trap preparation helper. It checks Feign Death cooldown, trap cooldown, player combat, and pet combat, then handles Feign Death and pet passive/follow state.
+
+```lua
+/run CastSpellByName("Frost Trap"); Quiver.FdPrepareTrap()
+```
+
+> [!WARNING]
+> `FdPrepareTrap()` can pull your pet back even while your character is stunned or otherwise unable to act.
+
+> [!NOTE]
+> The macro examples above use English spell names. Use your client's localized spell names where a macro calls `CastSpellByName` directly.
+
+## Automatic Diagnostics
+
+`3.1.5-Octo5-Diag1` records a bounded diagnostic trace automatically. Players do **not** need to enable debugging before an intermittent issue occurs.
+
+If something visibly goes wrong, add a marker as soon as possible:
+
+```text
+/qdiag mark short description of what happened
+```
+
+Useful commands:
+
+- `/qdiag status`
+- `/qdiag mark <description>`
+- `/qdiag snapshot`
+- `/qdiag selftest`
+- `/qdiag stop`
+- `/qdiag start`
+- `/qdiag clear`
+
+After testing, use `/reload` or exit WoW normally so SavedVariables are written, then send:
+
+```text
+WTF\Account\<account folder>\SavedVariables\Quiver.lua
+```
+
+The trace is stored in `Quiver_Diagnostics`. It records Quiver/ClassicAPI runtime state such as spellcast events, cast timing, movement speed, range decisions, aura state, FPS/latency snapshots, and Quiver module transitions.
+
+> [!IMPORTANT]
+> The diagnostic trace may contain in-game character names and combat text. It does **not** contain the account password and Quiver does not upload the trace anywhere.
+
+The recorder keeps the newest evidence in a rolling buffer, so a bug that occurs late in a long play session can still be captured.
+
+## ClassicAPI changes in this fork
+
+The current stabilization pass also includes fixes for:
+
+- ClassicAPI startup/version validation.
+- Correct `C_Spell.UnitCastingInfo` namespace use.
+- Auto Shot event-order/FPS issues.
+- Aimed Shot macro and incorrect-duration behavior.
+- Same-icon spell/action collisions.
+- Aspect taxi visibility.
+- Trueshot and Tranq event handling.
+- Disabled configuration buttons still accepting clicks.
+- Border-style callback dispatch.
+- UI-scale CVar parsing.
+- Trinket bag/item identity handling.
+- SavedVariables migration spelling.
+
+See [Changelog.md](Changelog.md) for version history and [AUDIT-OCTOWOW.md](AUDIT-OCTOWOW.md) for the stabilization audit.
+
+## Credits
+
+- Original addon and design: [SabineWren/Quiver](https://github.com/SabineWren/Quiver)
+- ClassicAPI: [brues-code/ClassicAPI](https://github.com/brues-code/ClassicAPI)
+- OctoWoW / ClassicAPI compatibility work: this fork
+
+The screenshots above are from the original Quiver repository and are used here to document the inherited UI/features.
+
+## Test status
+
+`3.1.5-Octo5-Diag1` is the current **player-test candidate**. Static validation and the ClassicAPI interface audit are complete for this branch, while automatic diagnostics remain enabled specifically to capture server/runtime behavior that cannot be proven from static inspection alone.
